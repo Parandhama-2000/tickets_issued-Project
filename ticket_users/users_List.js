@@ -8,7 +8,8 @@ const joi = require('joi');
 const Mongoschema = new mongoose.Schema({
     userName:{type:String,required:true},
     password:{type:String,required:true},
-    role:{type:String,required:true}
+    role:{type:String,required:true},
+    createdDtTime:{type:Number,default:Date.now}
 })
 
 const schema = joi.object({
@@ -58,6 +59,81 @@ console.log(req.body)
 })
 
 
+router.get('/getUsers',async(req,res)=>{
+  try{
+
+    let usersList = await modelUsers.find().select("id userName role createdDtTime");
+    res.status(200).json({
+      message:"Users List",
+      data:usersList
+    })
+
+  }catch(e){
+    res.status(500).json({
+      message:e.message
+    })
+  }
+})
+
+
+router.put('/updateUser/:userId',async(req,res)=>{
+  try {
+let userId = req.params.userId;
+
+if(!userId){
+  return res.status(400).json({message:"userId is required"})
+}
+
+    let existingUser = await modelUsers.findById(userId);
+    if(!existingUser){
+      return res.status(400).json({message:"User not found"})
+    }
+
+   let {error , value} = schema.validate(req.body || {})
+   if(error){
+    return res.status(400).json({message:error.details[0].message})
+   }
+  
+   let {userName,password,role} = req.body;
+   let salt = await bcrypt.genSalt(10);
+
+   let hashPassword = await bcrypt.hash(password,salt);
+   let updatedUser = await modelUsers.findByIdAndUpdate(userId,{userName,password:hashPassword,role},{new:true});
+   return res.status(200).json({message:"Updated successfully!",data:updatedUser})
+
+  }catch(e){
+        res.status(500).json({
+      message:e.message
+    })
+  }
+})
+
+
+router.delete('/deleteUser/:userId',async(req,res)=>{
+  try{
+
+    let userId = req.params.userId;
+
+    let existingUser = await modelUsers.findById(userId);
+
+    if(!existingUser){
+      return res.status(200).json({
+        message:"User not found"
+      })
+    }
+
+    let deletedRecod = await modelUsers.findByIdAndDelete(userId);
+
+    return res.status(200).json({
+      message:"User deleted successfully!",
+      data:deletedRecod
+    })
+  }catch(e){
+    res.status(500).json({
+      message:e.message
+    })
+  }
+})
 router.post('/loginUser',async (req,res)=>{
   try{
   let {error,value} = await schema.validate(req.body);

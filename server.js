@@ -1,6 +1,7 @@
 const express = require('express');
 const rateLimit = require('express-rate-limit');
 const monose = require('mongoose');
+const cors = require('cors')
 const app = express();
 app.use(express.json());
 require('dotenv').config();
@@ -10,6 +11,7 @@ const usersListing = require('./ticket_users/users_List')
 const ticktesList = require('./role-WiseTickets/ticktes_raising')
 // Rate limiting middleware
 
+app.use(cors())
 
 const rateLimiting = rateLimit({
     windowMs:1 * 60 * 1000,
