@@ -14,7 +14,33 @@ const middleware = async (req,res,next)=>{
       let encodeUser = await JWT.verify(bearToken,process.env.JWTToken)
  req.userInfo = encodeUser;
 
- if((encodeUser.role === 'platform' && record === null) || (record && encodeUser.userId === record.createdBy.toString())){
+
+  next()
+
+    }else{
+       next(new customErrorClass("Unauthorization",401))
+    }
+  }catch (err){
+     next(new customErrorClass(err.message,401))
+  }
+    
+}
+
+const middlewareedit = async (req,res,next)=>{
+  try{
+
+    let objectId = req.params.objectId;
+    let record = await modelTickets.findById(objectId);
+
+    let header = req.headers['authorization'];
+    const bearToken = header && header.split(" ")[1]
+    if(bearToken){
+      let encodeUser = await JWT.verify(bearToken,process.env.JWTToken)
+ req.userInfo = encodeUser;
+
+ if(encodeUser.role === 'platform'){
+  next()
+ }else if(record && encodeUser.userId === record.createdBy.toString()){
   next()
  }else{
   next(new customErrorClass("Ur not allow to access this page",401))
@@ -27,4 +53,4 @@ const middleware = async (req,res,next)=>{
   }
     
 }
-module.exports = middleware
+module.exports = {middleware,middlewareedit}

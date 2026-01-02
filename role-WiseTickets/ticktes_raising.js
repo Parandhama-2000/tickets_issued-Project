@@ -14,7 +14,7 @@ const joiValidation = joi.object({
     description:joi.string().required(),
     status:joi.string().required(),
 })
-router.post('/createTicket',middleware, async (req,res)=>{
+router.post('/createTicket',middleware.middleware, async (req,res)=>{
     try{
     const {error,value} =   joiValidation.validate(req.body || {});
  if (error) {
@@ -52,7 +52,7 @@ router.get('/listAllTickets',async(req,res)=>{
 })
 
 
-router.get('/getRecord/:objectId',middleware,async(req,res,next)=>{
+router.get('/getRecord/:objectId',middleware.middlewareedit,async(req,res,next)=>{
   try{
     let objectId = req.params.objectId;
     let record = await modelTickets.findById(objectId);
@@ -68,7 +68,7 @@ return res.status(500).json({message:e.message})
   }
 })
 
-router.delete('/deleteTicket/:objectId',middleware,async(req,res,next)=>{
+router.delete('/deleteTicket/:objectId',middleware.middlewareedit,async(req,res,next)=>{
   try{
 let ticketId = req.params.objectId;
 
@@ -85,7 +85,7 @@ next(new customErrorClass(e.message,500))
 })
 
 
-router.put('/updateTicket',middleware,async(req,res,next)=>{
+router.put('/updateTicket',middleware.middleware,async(req,res,next)=>{
   try{
     let {ticketId,title,description,status} = req.body;
     let updateBook = await modelTickets.findById(ticketId);
