@@ -25,7 +25,8 @@ router.post('/createTicket',middleware, async (req,res)=>{
   let newTicket = new modelTickets({
     title,description,status,
     role:req.userInfo.role,
-    createdBy:req.userInfo.userId
+    createdBy:req.userInfo.userId,
+    createdUser:req.userInfo.userName
   })
   await newTicket.save();
     return res.status(200).json({
@@ -38,7 +39,7 @@ router.post('/createTicket',middleware, async (req,res)=>{
 })
 
 
-router.get('/listAllTickets',middleware,async(req,res)=>{
+router.get('/listAllTickets',async(req,res)=>{
     try{
         let find = await modelTickets.find({})
     return res.status(200).json({

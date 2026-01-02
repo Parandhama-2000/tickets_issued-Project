@@ -5,7 +5,8 @@ const ticketShema = new mongoose.Schema({
     createdATime:{type:Number,default:Date.now},
     status:{type:String,required:true},
     createdBy:{type:mongoose.Schema.Types.ObjectId,ref:'userRigister'},
-    role:{type:String,required:true}
+    role:{type:String,required:true},
+    createdUser:{type:String,required:true}
 })
 const modelTickets = mongoose.model('ticketsList',ticketShema);
 module.exports = modelTickets;
